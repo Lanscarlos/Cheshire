@@ -2,8 +2,10 @@ package top.lanscarlos.cheshire.meta
 
 import ink.ptms.zaphkiel.api.event.ItemReleaseEvent
 import ink.ptms.zaphkiel.api.event.PluginReloadEvent
+import ink.ptms.zaphkiel.taboolib.library.configuration.ConfigurationSection
 import taboolib.common.platform.event.SubscribeEvent
 import taboolib.common5.Coerce
+import taboolib.module.chat.colored
 import top.lanscarlos.cheshire.Cheshire
 
 /**
@@ -33,32 +35,36 @@ internal object ItemDataDisplay {
 
     @SubscribeEvent
     fun e(e: ItemReleaseEvent.Display) {
-        e.itemStream.getZaphkielItem().config.getMapList("meta.data-display")?.forEach { map ->
-            val name = map["name"]?.toString() ?: return@forEach
-            val current = e.itemStream.getZaphkielData().getDeep(map["key-current"]?.toString() ?: map["key"]?.toString() ?: return@forEach) ?: return@forEach
-            val display = map["display"]?.toString() ?: dataDisplay!!
-            if (display == "none") {
-                return@forEach
+        e.itemStream.getZaphkielItem().config.getConfigurationSection("meta.data-display")?.let { section ->
+            section.getKeys(false).forEach { key ->
+                val data = when(val it = section.get("$key.key") ?: "null") {
+                    is List<*> -> {
+                        if (it.size > 0) Pair(
+                            e.itemStream.getZaphkielData().getDeep(it[0].toString()) ?: null,
+                            if (it.size >= 2) e.itemStream.getZaphkielData().getDeep(it[1].toString()) ?: null else null
+                        ) else Pair(e.itemStream.getZaphkielData().getDeep(it.toString()), null)
+                    }
+                    else -> Pair(e.itemStream.getZaphkielData().getDeep(it.toString()), null)
+                }
+                val display = section.getString("$key.display", dataDisplay!!).also {
+                    if (it == "none") return@forEach
+                }
+                val displaySymbol = section.getConfigurationSection("$key.display-symbol")?.let {
+                    listOf(it.getString("0", dataSymbol!![0]), it.getString("1", dataSymbol!![1]))
+                } ?: dataSymbol!!
+                val scale = section.getInt("scale", -1)
+
+                // 显示的数据
+                if (data.first == null) return@forEach
+                val value = if (data.second == null) {
+                    display.replace("%value%", data.first!!.asString())
+                }else {
+                    createBar(data.first!!.asInt(), data.second!!.asInt(), display, displaySymbol, scale)
+                }
+
+                e.addName(key, value)
+                e.addLore(key, value)
             }
-
-            val max = map["key-max"]?.let { e.itemStream.getZaphkielData().getDeep(it.toString()) ?: current }
-            val displaySymbol = if (map["display-symbol"] != null) {
-                listOf((map["display-symbol"] as Map<*, *>).let { it["0"]?.toString() ?: it[0].toString() }, (map["display-symbol"] as Map<*, *>).let { it["1"]?.toString() ?: it[1].toString() })
-            }else {
-                dataSymbol!!
-            }
-            val scale = map["scale"]?.toString()?.toInt() ?: -1
-
-            val value = if (max != null) {
-                // bar类型
-                createBar(current.asInt(), max.asInt(), display, displaySymbol, scale)
-            }else {
-                display.replace("%value%", current.asString())
-            }
-
-            e.addName(name, value)
-            e.addLore(name, value)
-
         }
     }
 
