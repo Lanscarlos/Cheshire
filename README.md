@@ -18,6 +18,8 @@ gradlew.bat clean build
 
 ***
 
+<br>
+
 # 自定义数据可视化
 Cheshire 新增了数据显示功能，可将物品当中的 Data 的数据可视化
 <br>
@@ -64,6 +66,8 @@ DISPLAY_ITEM_EXAMPLE:
 <img src="gugugu">
 
 ***
+
+<br>
 
 # 事件
 
@@ -141,6 +145,8 @@ example-Item:
 </details>
 
 ***
+
+<br>
 
 # 粒子效果
 
