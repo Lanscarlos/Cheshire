@@ -12,6 +12,7 @@ import org.bukkit.event.block.Action
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.event.entity.EntityDamageByEntityEvent
+import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.event.entity.EntityShootBowEvent
 import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.inventory.ItemStack
@@ -112,9 +113,9 @@ object ItemListener {
                 "player" to attacker,
                 "attacker" to attacker,
                 "entity" to e.entity,
-                "entityType" to e.entityType,
+                "entityType" to e.entityType.name,
                 "damage" to e.damage,
-                "cause" to e.cause,
+                "cause" to e.cause.name,
                 "isCancelled" to e.isCancelled
             ))
         }else if (attacker is Projectile) {
@@ -125,14 +126,30 @@ object ItemListener {
 
         val entity = e.entity
         if (entity is Player) {
-            invokeScript("onDamaged*", entity, e, mapOf(
+            invokeScript("onAttacked*", entity, e, mapOf(
                 "event" to e,
                 "player" to entity,
                 "entity" to entity,
                 "attacker" to e.damager,
-                "entityType" to e.entityType,
+                "entityType" to e.entityType.name,
                 "damage" to e.damage,
-                "cause" to e.cause,
+                "cause" to e.cause.name,
+                "isCancelled" to e.isCancelled
+            ))
+        }
+    }
+
+    @SubscribeEvent
+    fun e(e: EntityDamageEvent) {
+        val entity = e.entity
+        if (entity is Player) {
+            invokeScript("onDamaged*", entity, e, mapOf(
+                "event" to e,
+                "player" to entity,
+                "entity" to entity,
+                "entityType" to e.entityType.name,
+                "damage" to e.damage,
+                "cause" to e.cause.name,
                 "isCancelled" to e.isCancelled
             ))
         }
