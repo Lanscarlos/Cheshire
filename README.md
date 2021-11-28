@@ -21,8 +21,13 @@ gradlew.bat clean build
 <br>
 
 # 自定义数据可视化
-Cheshire 新增了数据显示功能，可将物品当中的 Data 的数据可视化
+Cheshire 新增了数据显示功能，可将物品当中的 Data 定义的数据可视化
+<details>
+<summary>
+详情
+</summary>
 <br>
+
 ```yaml
 #./plugins/Zaphkiel/item/example.yml
 
@@ -43,6 +48,7 @@ example-Item:
     # 定义需要显示的数据
     data-display:
       MANA:
+        # 定义数值
         key: 'example.mana'
         display: '&8[ &f%value% &8]'
 ```
@@ -63,7 +69,30 @@ DISPLAY_ITEM_EXAMPLE:
 <br>
 效果演示
 <br>
-<img src="gugugu">
+<img src="https://z3.ax1x.com/2021/11/28/ouFNcQ.png" height="240">
+<br><br><br>
+
+除了直接显示数值，也支持像耐久度那样显示，可以自定义图标样式以及百分比<br>
+具体请参考耐久度的格式
+```yaml
+  meta:
+    # 定义需要显示的数据
+    data-display:
+      MANA:
+        # 定义当前值以及最大值
+        key:
+          - 'example.mana'
+          - 'example.max-mana'
+        display: '&8[ &f%symbol% &8]'
+        display-symbol:
+          0: '✦'
+          1: '✧'
+```
+<img src="https://z3.ax1x.com/2021/11/28/ouFt1g.png" height="240">
+<img src="https://z3.ax1x.com/2021/11/28/ouFY9S.png" height="240">
+<img src="https://z3.ax1x.com/2021/11/28/ouAAzD.png" height="240">
+<br><br>
+</details>
 
 ***
 
@@ -78,6 +107,7 @@ Cheshire 提供了一系列**新增事件**以及**强化事件**供用户使用
 通过这些实例对象，可以让 Kether 发挥更强大的功能
 <br>
 只需要在普通事件后加上 * 即可对其强化，如
+
 ```yaml
 example-Item:
   display: DISPLAY_ITEM
@@ -92,9 +122,10 @@ example-Item:
 |:--|:--|
 | **[onActive*](#onActive)** | 当玩家穿戴物品于装备栏（包括主副手、盔甲）时触发此事件 |
 | onAttack* | 玩家攻击事件 |
+| onAttacked* | 玩家被攻击事件 |
 | onBlockBreak* | 玩家破坏方块事件 |
 | onBlockPlace* | 玩家放置方块事件 |
-| onDamaged* | 玩家被攻击事件 |
+| onDamaged* | 玩家受伤事件 |
 | **[onInactive**](#onInactive)* | 当玩家从装备栏（包括主副手、盔甲）取下物品时触发此事件 |
 | onTick* | 周期性事件（ 5秒触发一次 ） |
 
@@ -109,6 +140,7 @@ example-Item:
 
 当玩家穿戴物品于装备栏（包括主副手、盔甲）时触发此事件
 <br>
+
 ```yaml
 example-Item:
   display: DISPLAY_ITEM
@@ -178,17 +210,37 @@ example-Item:
   meta:
     # 定义需要显示的数据
     effect:
-      trail:
+      flame:
         # 选择粒子效果
-        type: 'Arrow-Trail'
+        type: 'Circle-Rotatable'
         # 定义粒子
         particle:
-          type: 'FLAME'
+          type: 'SOUL_FIRE_FLAME'
         # 每1Tick播放一次效果
+        period: 1
+        # 水平半径
+        radius: 1.0
+        # 高度范围
+        height: 0.6
+        # Y轴偏移
+        offset-y: 1.0
+        # 圆弧步长
+        step: 13
+        # 旋转角步长
+        rotate-step: 4.0
+      trail:
+        # 选择Arrow-Trail粒子效果
+        type: 'Arrow-Trail'
+        particle:
+          type: 'FLAME'
         period: 1
         # 持续10秒
         duration: 200
   event:
+    # 物品穿戴事件
+    # 装备物品时在穿戴者(&player) 身上播放 flame 效果
+    onActive*: |-
+        effect play *example on &player with always
     # 玩家射击事件
     # 射击时在射出的箭矢(&projectile) 上播放 trail 效果
     onShoot*: |-
@@ -197,4 +249,4 @@ example-Item:
 <br>
 效果演示
 <br>
-<img src="gugugu">
+<img src="https://z3.ax1x.com/2021/11/28/ouZneJ.gif" height="240">
