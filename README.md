@@ -20,7 +20,21 @@ gradlew.bat clean build
 
 <br>
 
-# 自定义数据可视化
+# 计划
+
+- [x] [自定义数据可视化](#data-display)
+- [x] [事件强化](#event)
+- [x] [自定义粒子效果](#effect) （基础部分）
+- [ ] 自定义技能
+- [ ] 灵魂绑定系统
+
+<br>
+
+***
+
+<br>
+
+# <strong id="data-display">自定义数据可视化</strong>
 Cheshire 新增了数据显示功能，可将物品当中的 Data 定义的数据可视化
 <details>
 <summary>
@@ -98,7 +112,7 @@ DISPLAY_ITEM_EXAMPLE:
 
 <br>
 
-# 事件
+# <strong id="event">事件</strong>
 
 Cheshire 提供了一系列**新增事件**以及**强化事件**供用户使用
 <br>
@@ -180,7 +194,7 @@ example-Item:
 
 <br>
 
-# 粒子效果
+# <strong id="effect">粒子效果</strong>
 
 借助于 TabooLib 的粒子模块库<br>
 Cheshire 提供了一些强大的粒子效果<br>
