@@ -8,6 +8,7 @@ import org.bukkit.entity.Projectile
 import org.bukkit.event.entity.EntityDamageByEntityEvent
 import org.bukkit.event.entity.EntityShootBowEvent
 import taboolib.common.platform.Schedule
+import taboolib.common.util.sync
 import taboolib.platform.type.BukkitProxyEvent
 
 /**
@@ -30,9 +31,11 @@ object ArrowEvent {
                 continue
             }
             if (entry.key.isOnGround) {
-                val event = Land(entry.value.entity as Player, entry.key, ZaphkielAPI.read(entry.value.bow!!), entry.value)
-                if (!event.call()) {
-                    entry.key.remove()
+                sync {
+                    val event = Land(entry.value.entity as Player, entry.key, ZaphkielAPI.read(entry.value.bow!!), entry.value)
+                    if (!event.call()) {
+                        entry.key.remove()
+                    }
                 }
                 iterator.remove()
                 continue
